@@ -1,8 +1,8 @@
 module Math.Spline
     ( Spline(..), ControlPoints(..)
-    
+
     , Knots, mkKnots, knots
-    
+
     , BezierCurve, bezierCurve
     , BSpline, bSpline
     , MSpline, mSpline, toMSpline

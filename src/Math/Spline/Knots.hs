@@ -2,44 +2,44 @@
 module Math.Spline.Knots
     ( Knots
     , empty, isEmpty
-    
+
     , knot, multipleKnot
     , mkKnots, fromList
-    
+
     , numKnots, lookupKnot
     , toList, numDistinctKnots, lookupDistinctKnot
-    
+
     , knots, knotsVector
     , distinctKnots, multiplicities
     , distinctKnotsVector, multiplicitiesVector
     , distinctKnotsSet
-    
+
     , toMap
     , fromMap
-    
+
     , toVector
     , fromVector
-    
+
     , splitLookup
     , takeKnots, dropKnots, splitKnotsAt
     , takeDistinctKnots, dropDistinctKnots, splitDistinctKnotsAt
-    
+
     , maxMultiplicity
     , knotMultiplicity, setKnotMultiplicity
-    
+
     , splitFind
-    
+
     , fromAscList, fromDistinctAscList
     , valid
-    
+
     , knotSpan
     , knotsInSpan
     , knotSpans
     , knotDomain
     , findSpan
-    
+
     , uniform
-    
+
     , minKnot
     , maxKnot
     ) where
@@ -95,14 +95,14 @@ multipleKnot k n = Knots $ V.replicate n k
 mkKnots :: (Ord a) => [a] -> Knots a
 mkKnots = Knots . V.fromList . sort
 
--- |Create a knot vector consisting of all the knots and corresponding 
+-- |Create a knot vector consisting of all the knots and corresponding
 -- multiplicities in a list.
 fromList :: (Ord k) => [(k, Int)] -> Knots k
 fromList ks = Knots v
     where v = V.concat . map (\(k, mult) -> V.replicate mult k) .
               sortBy (comparing fst) $ filter ((>0).snd) ks
 
--- |Create a knot vector consisting of all the knots and corresponding 
+-- |Create a knot vector consisting of all the knots and corresponding
 -- multiplicities in a list ordered by the knots' 'Ord' instance.  The
 -- ordering precondition is not checked.
 fromAscList :: Eq k => [(k, Int)] -> Knots k
@@ -110,7 +110,7 @@ fromAscList ks = Knots v
     where v = V.concat . map (\(k, mult) -> V.replicate mult k)
                  $ filter ((>0).snd) ks
 
--- |Create a knot vector consisting of all the knots and corresponding 
+-- |Create a knot vector consisting of all the knots and corresponding
 -- multiplicities in a list ordered by the knots' 'Ord' instance with no
 -- duplicates.  The preconditions are not checked.
 fromDistinctAscList :: Eq k => [(k, Int)] -> Knots k
@@ -160,7 +160,7 @@ lookupDistinctKnot k kts = lookupKnot k . Knots $ distinctKnotsVector kts
 
 -- |@splitLookup n kts@: Split a knot vector @kts@ into 3 parts @(pre, mbKt, post)@
 -- such that:
---  
+--
 --  * All the keys in @pre@, @mbKt@ (viewed as a knot vector of either 0
 -- or 1 knot), and @post@ are disjoint and ordered
 --  * Putting the 3 parts back together yields exactly the original knot vector
@@ -225,7 +225,7 @@ distinctKnotsSet (Knots k) = S.fromAscList $ V.toList k
 knotMultiplicity :: (Ord k) => k -> Knots k -> Int
 knotMultiplicity k (Knots ks) = V.length $ V.elemIndices k ks
 
--- |Returns a new knot vector with the given knot set to the specified 
+-- |Returns a new knot vector with the given knot set to the specified
 -- multiplicity and all other knots unchanged.
 setKnotMultiplicity :: Ord k => k -> Int -> Knots k -> Knots k
 setKnotMultiplicity k n kts@(Knots v)

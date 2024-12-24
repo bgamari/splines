@@ -21,9 +21,9 @@ import Data.VectorSpace
 import qualified Data.Vector.Generic as V
 import Data.Vector.Generic ((!))
 
--- |@bSpline kts cps@ creates a B-spline with the given knot vector and control 
--- points.  The degree is automatically inferred as the difference between the 
--- number of spans in the knot vector (@numKnots kts - 1@) and the number of 
+-- |@bSpline kts cps@ creates a B-spline with the given knot vector and control
+-- points.  The degree is automatically inferred as the difference between the
+-- number of spans in the knot vector (@numKnots kts - 1@) and the number of
 -- control points (@length cps@).
 bSpline :: V.Vector v a => Knots (Scalar a) -> v a -> BSpline v a
 bSpline kts cps = fromMaybe
@@ -32,7 +32,7 @@ bSpline kts cps = fromMaybe
 
 -- not exported; precondition: n > 0
 maybeSpline :: V.Vector v a => Knots (Scalar a) -> v a -> Maybe (BSpline v a)
-maybeSpline kts cps 
+maybeSpline kts cps
     | n > m     = Nothing
     | otherwise = Just (Spline (m - n) kts cps)
     where
@@ -50,13 +50,13 @@ differentiateBSpline spline
     where
         n = V.length ds
         m = numKnots ks - 1
-        
+
         ks' = mkKnots . init . tail $ ts
         ds' = V.zipWith (*^) (V.tail cs) (V.zipWith (^-^) (V.tail ds) ds)
-        
+
         ks = knotVector spline; ts = knots ks
         ds = controlPoints spline
-        
+
         p  = degree spline
         cs = V.fromList [ if t1 /= t0 then fromIntegral p / (t1 - t0) else 0 | (t0,t1) <- spans p ts]
 
@@ -82,23 +82,23 @@ splitBSpline
   :: ( VectorSpace a, Ord (Scalar a), Fractional (Scalar a), V.Vector v a
      , V.Vector v (Scalar a)) =>
      BSpline v a -> Scalar a -> Maybe (BSpline v a, BSpline v a)
-splitBSpline spline@(Spline p kv _) t 
+splitBSpline spline@(Spline p kv _) t
     | inDomain  = Just (Spline p us0 ds0, Spline p us1 ds1)
     | otherwise = Nothing
     where
         inDomain = case knotDomain kv p of
             Nothing         -> False
             Just (t0, t1)   -> t >= t0 && t <= t1
-        
+
         (lt, _, gt) = splitFind t kv
         dss = deBoor spline t
-        
+
         us0 = setKnotMultiplicity t (p+1) lt
         ds0 = trimTo us0 (map V.head dss)
-        
+
         us1 = setKnotMultiplicity t (p+1) gt
         ds1 = V.reverse (trimTo us1 (map V.last dss))
-        
+
         trimTo kts = V.fromList . take (numKnots kts - p - 1)
 
 basisFuns :: ( VectorSpace a, Ord (Scalar a), Fractional (Scalar a), V.Vector v a

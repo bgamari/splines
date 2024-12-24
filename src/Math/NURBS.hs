@@ -35,14 +35,14 @@ nurbs kts cps = NURBS (bSpline kts cps)
 -- |Constructs the homogeneous-coordinates B-spline that corresponds to this
 -- NURBS curve
 nurbsAsSpline :: VectorSpace v => NURBS v -> BSpline V.Vector (Scalar v, v)
-nurbsAsSpline (NURBS spline) = spline 
+nurbsAsSpline (NURBS spline) = spline
     { controlPoints = V.map homogenize (controlPoints spline) }
     where
         homogenize (w,v) = (w, v ^* w)
 
 -- |Constructs the NURBS curve corresponding to a homogeneous-coordinates B-spline
 splineAsNURBS :: (VectorSpace v, Fractional (Scalar v)) => BSpline V.Vector (Scalar v, v) -> NURBS v
-splineAsNURBS spline = NURBS spline 
+splineAsNURBS spline = NURBS spline
     { controlPoints = V.map unHomogenize (controlPoints spline) }
     where
         unHomogenize (w,v) = (w, v ^/ w)
@@ -60,7 +60,7 @@ evalNURBS f = project . evalBSpline (nurbsAsSpline f)
 
 -- |Returns the domain of a NURBS - that is, the range of parameter values
 -- over which a spline with this degree and knot vector has a full basis set.
-nurbsDomain :: Scalar v ~ Scalar (Scalar v) => 
+nurbsDomain :: Scalar v ~ Scalar (Scalar v) =>
     NURBS v -> Maybe (Scalar v, Scalar v)
 nurbsDomain (NURBS spline) = knotDomain (knotVector spline) (degree spline)
 

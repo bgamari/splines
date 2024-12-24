@@ -45,15 +45,15 @@ deCasteljau cs t
     where
         interp x0 x1 = lerp x0 x1 t
 
--- |Split and rescale a Bezier curve.  Given a 'BezierCurve' @b@ and a point 
--- @t@, @splitBezierCurve b t@ creates 2 curves @(b1, b2)@ such that (up to 
+-- |Split and rescale a Bezier curve.  Given a 'BezierCurve' @b@ and a point
+-- @t@, @splitBezierCurve b t@ creates 2 curves @(b1, b2)@ such that (up to
 -- reasonable numerical accuracy expectations):
--- 
+--
 -- > evalSpline b1  x    == evalSpline b (x * t)
 -- > evalSpline b2 (x-t) == evalSpline b (x * (1-t))
--- 
+--
 splitBezierCurve :: VectorSpace v => BezierCurve v -> Scalar v -> (BezierCurve v, BezierCurve v)
-splitBezierCurve (BezierCurve n cs) t = 
+splitBezierCurve (BezierCurve n cs) t =
     ( BezierCurve n (V.fromList (map V.head css))
     , BezierCurve n (V.reverse (V.fromList (map V.last css)))
     ) where css = deCasteljau cs t

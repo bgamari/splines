@@ -34,7 +34,7 @@ data BSpline v t = Spline
 deriving instance (Eq (Scalar a), Eq (v a)) => Eq   (BSpline v a)
 deriving instance (Ord (Scalar a), Ord (v a)) => Ord  (BSpline v a)
 instance (Show (Scalar a), Show a, Show (v a)) => Show (BSpline v a) where
-    showsPrec p (Spline _ kts cps) = showParen (p>10) 
+    showsPrec p (Spline _ kts cps) = showParen (p>10)
         ( showString "bSpline "
         . showsPrec 11 kts
         . showChar ' '
@@ -49,7 +49,7 @@ mapControlPoints f spline = spline
     , knotVector = knotVector spline
     }
 
--- |Evaluate a B-spline at the given point.  This uses a slightly modified version of 
+-- |Evaluate a B-spline at the given point.  This uses a slightly modified version of
 -- de Boor's algorithm which is only strictly correct inside the domain of the spline.
 -- Unlike the standard algorithm, the basis functions always sum to 1, even outside the
 -- domain of the spline.  This is mainly useful for \"clamped\" splines - the values at
@@ -66,14 +66,14 @@ evalBSpline spline
      | V.null (controlPoints spline) = zeroV
      | otherwise = V.head . P.last . deBoor spline
 
--- | Evaluate a B-spline at the given point.  This uses de Boor's algorithm, which is 
+-- | Evaluate a B-spline at the given point.  This uses de Boor's algorithm, which is
 -- only strictly correct inside the domain of the spline.
--- 
+--
 -- For a (much slower) strictly mathematically correct evaluation, see 'evalReferenceBSpline'.
 {-# INLINE evalNaturalBSpline #-}
-{-# SPECIALIZE evalNaturalBSpline :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a) 
+{-# SPECIALIZE evalNaturalBSpline :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a)
     => BSpline BV.Vector a -> Scalar a -> a #-}
-{-# SPECIALIZE evalNaturalBSpline :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a, UV.Unbox a) 
+{-# SPECIALIZE evalNaturalBSpline :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a, UV.Unbox a)
     => BSpline UV.Vector a -> Scalar a -> a #-}
 evalNaturalBSpline :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a, V.Vector v a)
     => BSpline v a -> Scalar a -> a
@@ -81,9 +81,9 @@ evalNaturalBSpline spline x = runST $ do
     let Spline p kvec cps = slice spline x
         kts = V.tail (knotsVector kvec)
         s = p - 1 - V.length (V.takeWhile (x==) kts)
-    
+
     ds <- V.thaw cps
-    
+
     sequence_
         [ do
             -- No need to check whether u0 < x < u1:
@@ -93,14 +93,14 @@ evalNaturalBSpline spline x = runST $ do
                 !u1 = kts V.! (j + p)
                 !du = u1 - u0
                 !a  = if du <= 0 then 1 else (x - u0) / du
-            
+
             d0 <- MV.read ds  j
             d1 <- MV.read ds (j + 1)
             MV.write ds j (lerp d0 d1 a)
         | i <- [0 .. s]
         , j <- [0 .. s - i]
         ]
-    
+
     MV.read ds 0
 
 -- |Insert one knot into a 'BSpline' without changing the spline's shape.
@@ -134,7 +134,7 @@ extend vec
 
 -- | The table from de Boor's algorithm, calculated for the entire spline.  If that is not necessary
 -- (for example, if you are only evaluating the spline), then use 'slice' on the spline first.
--- 'splitBSpline' currently uses the whole table.  It is probably not necessary there, but it 
+-- 'splitBSpline' currently uses the whole table.  It is probably not necessary there, but it
 -- greatly simplifies the definition and makes the similarity to splitting Bezier curves very obvious.
 deBoor :: (Fractional (Scalar a), Ord (Scalar a), VectorSpace a, V.Vector v a, V.Vector v (Scalar a))
     => BSpline v a -> Scalar a -> [v a]
@@ -167,7 +167,7 @@ interp x x0 x1 y0 y1
     where
         a = (x - x0) / (x1 - x0)
 
--- "slice" a spline to contain only those knots and control points that 
+-- "slice" a spline to contain only those knots and control points that
 -- actually influence the value at 'x'.
 --
 -- It should be true for any valid BSpline that:
@@ -185,7 +185,7 @@ slice spline x = spline
     where
         l = maybe 0 id $ V.findIndex (> x) us
         n = degree spline + 1
-        
+
         us = knotsVector (knotVector spline)
 
 -- Try to take n, but if there's not enough, pad the rest with 0s

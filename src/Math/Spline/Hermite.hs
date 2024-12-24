@@ -17,12 +17,12 @@ import Math.Spline.Knots
 import qualified Data.Vector as V
 import Data.VectorSpace
 
--- | Cubic Hermite splines.  These are cubic splines defined by a 
+-- | Cubic Hermite splines.  These are cubic splines defined by a
 -- sequence of control points and derivatives at those points.
 newtype CSpline a = CSpline [(Scalar a,a,a)]
 
--- | Cubic splines specified by a list of control points, 
--- where each control point is given by a triple of parameter value, 
+-- | Cubic splines specified by a list of control points,
+-- where each control point is given by a triple of parameter value,
 -- position of the spline at that parameter value,
 -- and derivative of the spline at that parameter value.
 cSpline :: Ord (Scalar a) => [(Scalar a,a,a)] -> CSpline a
@@ -59,22 +59,22 @@ evalCSpline (CSpline cps) = loop cps
 
 instance (VectorSpace a, Fractional (Scalar a), Ord (Scalar a)) => Spline CSpline a where
     splineDegree _ = 3
-    
+
     splineDomain (CSpline  []) = Nothing
     splineDomain (CSpline cps) = Just (head xs, last xs) where (xs, _, _) = unzip3 cps
-    
+
     evalSpline = evalCSpline
-    
+
     -- TODO: check.  Also work out a more compact translation, taking advantage of the
-    -- known continuity on the interior knots.  It should be possible to work out an 
+    -- known continuity on the interior knots.  It should be possible to work out an
     -- equivalent b-spline with only 'n+4' knots.  If that translation isn't ill-
     -- conditioned, it might be a good thing to implement.
     toBSpline (CSpline cSpl) = bSpline kts (V.fromList cps)
-        where 
+        where
             kts = fromList [(x,4) | x <- xs]
-            
+
             (xs, _, _) = unzip3 cSpl
-            cps = concat 
+            cps = concat
                 [ [ y0
                   , y0 ^+^ dy0 ^* dx3
                   , y1 ^-^ dy1 ^* dx3

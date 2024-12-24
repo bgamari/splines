@@ -15,7 +15,7 @@ import Math.Spline.Knots
 import qualified Data.Vector as V
 import Data.VectorSpace
 
--- |M-Splines are B-splines normalized so that the integral of each basis 
+-- |M-Splines are B-splines normalized so that the integral of each basis
 -- function over the spline domain is 1.
 data MSpline v = MSpline
     { mSplineDegree        :: !Int
@@ -26,7 +26,7 @@ data MSpline v = MSpline
 deriving instance (Eq   (Scalar v), Eq   v) => Eq   (MSpline v)
 deriving instance (Ord  (Scalar v), Ord  v) => Ord  (MSpline v)
 instance (Show (Scalar v), Show v) => Show (MSpline v) where
-    showsPrec p (MSpline _ kts cps) = showParen (p>10) 
+    showsPrec p (MSpline _ kts cps) = showParen (p>10)
         ( showString "mSpline "
         . showsPrec 11 kts
         . showChar ' '
@@ -34,9 +34,9 @@ instance (Show (Scalar v), Show v) => Show (MSpline v) where
         )
 
 
--- |@mSpline kts cps@ creates a M-spline with the given knot vector and control 
--- points.  The degree is automatically inferred as the difference between the 
--- number of spans in the knot vector (@numKnots kts - 1@) and the number of 
+-- |@mSpline kts cps@ creates a M-spline with the given knot vector and control
+-- points.  The degree is automatically inferred as the difference between the
+-- number of spans in the knot vector (@numKnots kts - 1@) and the number of
 -- control points (@length cps@).
 mSpline :: Knots (Scalar a) -> V.Vector a -> MSpline a
 mSpline kts cps

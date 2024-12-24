@@ -29,7 +29,7 @@ data ISpline v = ISpline
 deriving instance (Eq   (Scalar v), Eq   v) => Eq   (ISpline v)
 deriving instance (Ord  (Scalar v), Ord  v) => Ord  (ISpline v)
 instance (Show (Scalar v), Show v) => Show (ISpline v) where
-    showsPrec p (ISpline _ kts cps) = showParen (p>10) 
+    showsPrec p (ISpline _ kts cps) = showParen (p>10)
         ( showString "iSpline "
         . showsPrec 11 kts
         . showChar ' '
@@ -37,12 +37,12 @@ instance (Show (Scalar v), Show v) => Show (ISpline v) where
         )
 
 
--- |@iSpline kts cps@ creates an I-spline with the given knot vector and control 
--- points.  The degree is automatically inferred as the difference between the 
--- number of spans in the knot vector (@numKnots kts - 1@) and the number of 
+-- |@iSpline kts cps@ creates an I-spline with the given knot vector and control
+-- points.  The degree is automatically inferred as the difference between the
+-- number of spans in the knot vector (@numKnots kts - 1@) and the number of
 -- control points (@length cps@).
 iSpline :: Knots (Scalar a) -> V.Vector a -> ISpline a
-iSpline kts cps 
+iSpline kts cps
     | n > m     = error "iSpline: too few knots"
     | otherwise = ISpline (m - n) kts cps
     where
@@ -65,12 +65,12 @@ toISpline = fromBSpline . toBSpline
 fromBSpline :: (Eq v, VectorSpace v, Fractional (Scalar v), Ord (Scalar v))
     => BSpline V.Vector v -> ISpline v
 fromBSpline spline
-    | V.head ds == zeroV 
+    | V.head ds == zeroV
     && numKnots ks >= 2 = iSpline (mkKnots (init (tail ts))) (V.tail ds')
     | otherwise         = iSpline (mkKnots (init       ts )) ds'
     where
         ks = knotVector spline
         ts = knots ks
         ds = controlPoints spline
-        
+
         ds' = V.zipWith (^-^) ds (V.cons zeroV ds)
