@@ -65,10 +65,12 @@ instance Show a => Show (Knots a) where
         . showsPrec 11 (knots ks)
         )
 
+instance (Ord a) => Semigroup (Knots a) where
+    Knots v1 <> Knots v2 =
+      Knots . V.fromList . sort . V.toList $ v1 V.++ v2
+
 instance (Ord a) => Monoid (Knots a) where
     mempty = empty
-    mappend (Knots v1) (Knots v2) =
-      Knots . V.fromList . sort . V.toList $ v1 V.++ v2
 
 instance Foldable Knots where
     foldMap f = foldMap f . knotsVector
