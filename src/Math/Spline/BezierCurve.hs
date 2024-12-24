@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, UndecidableInstances, FlexibleContexts #-}
 module Math.Spline.BezierCurve
     ( BezierCurve, bezierCurve, splitBezierCurve
     , evalSpline
